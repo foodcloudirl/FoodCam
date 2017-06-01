@@ -8,10 +8,16 @@ import json
 import threading
 import settings
 
+#GPIO Setup
 GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(17, GPIO.OUT) #blue
+GPIO.setup(18, GPIO.OUT) #red
+GPIO.setup(22, GPIO.OUT) #amber
+GPIO.setup(23, GPIO.OUT) #green
+
 print('hello');
+GPIO.output(17, GPIO.HIGH) #blue led on
 
 buffer = StringIO()
 dropbox = pycurl.Curl()
@@ -42,26 +48,31 @@ while True:
     if input_state == True:
         time.sleep(0.1)
     else:
+    	GPIO.output(18, GPIO.HIGH) #red led on
         print('Button Pressed')
-	dropbox.perform()
-	time.sleep(1)
-	os.system('bash /home/pi/button/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
-	time.sleep(1)
-	filename = os.readlink('/home/pi/motion/lastsnap.jpg')
-	print(filename)
-	bashIO = os.popen('bash /home/pi/button/dropbox_uploader.sh share /'+filename).read()
-	print(bashIO)
-	url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
-	print("dropbox url: "+str(url))
-	data = {'attachments':[{
-		'fallback':'Should be an image of tasty surplus food',
-		'text':'Hello, there is food going in the kitchen!!',
-		'image_url':str(url)
-	}]}
-	print(data)
-	js = json.dumps(data)
-	slack.setopt(slack.POSTFIELDS,js)
-	slack.perform()
-	print('sent to slack')
-	time.sleep(2)
-
+		dropbox.perform()
+		time.sleep(1)
+		GPIO.output(18, GPIO.LOW) #red led off
+		GPIO.output(22, GPIO.HIGH) #amber led on
+		os.system('bash /home/pi/button/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
+		time.sleep(1)
+		filename = os.readlink('/home/pi/motion/lastsnap.jpg')
+		print(filename)
+		bashIO = os.popen('bash /home/pi/button/dropbox_uploader.sh share /'+filename).read()
+		print(bashIO)
+		url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
+		print("dropbox url: "+str(url))
+		data = {'attachments':[{
+			'fallback':'Should be an image of tasty surplus food',
+			'text':'Hello, there is food going in the kitchen!!',
+			'image_url':str(url)
+		}]}
+		print(data)
+		js = json.dumps(data)
+		slack.setopt(slack.POSTFIELDS,js)
+		slack.perform()
+		GPIO.output(22, GPIO.LOW) #amber led off
+		GPIO.output(23, GPIO.HIGH) #green led on
+		print('sent to slack')
+		time.sleep(2)
+		GPIO.output(23, GPIO.LOW) #green led off
