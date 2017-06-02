@@ -15,6 +15,10 @@ GPIO.setup(17, GPIO.OUT) #blue
 GPIO.setup(18, GPIO.OUT) #red
 GPIO.setup(22, GPIO.OUT) #amber
 GPIO.setup(23, GPIO.OUT) #green
+GPIO.output(17, GPIO.HIGH) #blue led off
+GPIO.output(18, GPIO.HIGH) #red led off
+GPIO.output(22, GPIO.HIGH) #amber led off
+GPIO.output(23, GPIO.HIGH) #green led off
 
 print('hello');
 
