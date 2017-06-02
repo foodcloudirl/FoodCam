@@ -16,7 +16,7 @@ GPIO.setup(18, GPIO.OUT) #red
 GPIO.setup(22, GPIO.OUT) #amber
 GPIO.setup(23, GPIO.OUT) #green
 
-GPIO.output(17, GPIO.HIGH) #blue led on
+GPIO.output(17, GPIO.LOW) #blue led on
 print('hello');
 
 buffer = StringIO()
@@ -41,9 +41,9 @@ def ping():
     slackTest.perform()
 
 def blink():
-    GPIO.output(17, GPIO.LOW) #blue led off
+    GPIO.output(17, GPIO.HIGH) #blue led off
     time.sleep(1)
-    GPIO.output(17, GPIO.HIGH) #blue led on
+    GPIO.output(17, GPIO.LOW) #blue led on
     threading.Timer(1.0, blink).start()
 
 ping()
@@ -55,12 +55,12 @@ while True:
     if input_state == True:
         time.sleep(0.1)
     else:
-        GPIO.output(18, GPIO.HIGH) #red led on
+        GPIO.output(18, GPIO.LOW) #red led on
         print('Button Pressed')
         dropbox.perform()
         time.sleep(1)
-        GPIO.output(18, GPIO.LOW) #red led off
-        GPIO.output(22, GPIO.HIGH) #amber led on
+        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(22, GPIO.LOW) #amber led on
         os.system('bash /home/pi/button/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
         time.sleep(1)
         filename = os.readlink('/home/pi/motion/lastsnap.jpg')
@@ -78,8 +78,8 @@ while True:
         js = json.dumps(data)
         slack.setopt(slack.POSTFIELDS,js)
         slack.perform()
-        GPIO.output(22, GPIO.LOW) #amber led off
-        GPIO.output(23, GPIO.HIGH) #green led on
+        GPIO.output(22, GPIO.HIGH) #amber led off
+        GPIO.output(23, GPIO.LOW) #green led on
         print('sent to slack')
         time.sleep(2)
-        GPIO.output(23, GPIO.LOW) #green led off
+        GPIO.output(23, GPIO.HIGH) #green led off
