@@ -61,11 +61,11 @@ while True:
         time.sleep(1)
         GPIO.output(18, GPIO.HIGH) #red led off
         GPIO.output(22, GPIO.LOW) #amber led on
-        os.system('bash /home/pi/button/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
+        os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
         time.sleep(1)
         filename = os.readlink('/home/pi/motion/lastsnap.jpg')
         print(filename)
-        bashIO = os.popen('bash /home/pi/button/dropbox_uploader.sh share /'+filename).read()
+        bashIO = os.popen('bash /home/pi/FoodCam/dropbox_uploader.sh share /'+filename).read()
         print(bashIO)
         url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
         print("dropbox url: "+str(url))
