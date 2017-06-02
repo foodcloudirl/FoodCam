@@ -16,13 +16,11 @@ GPIO.setup(18, GPIO.OUT) #red
 GPIO.setup(22, GPIO.OUT) #amber
 GPIO.setup(23, GPIO.OUT) #green
 
-GPIO.output(17, GPIO.LOW) #blue led on
 print('hello');
 
 buffer = StringIO()
 dropbox = pycurl.Curl()
 dropbox.setopt(dropbox.URL,'localhost:8080/0/action/snapshot')
-#dropbox.setopt(c.WRITEDATA,buffer)
 slack = pycurl.Curl()
 #slack.setopt(slack.URL,settings.slackUrl)
 slack.setopt(slack.URL,settings.slackTestUrl)#foodcam-test channel url
@@ -32,6 +30,7 @@ slackTest = pycurl.Curl()
 slackTest.setopt(slack.URL,settings.slackTestUrl)
 slackTest.setopt(slack.HTTPHEADER,['Accept: application/json'])
 slackTest.setopt(slack.POST,1)
+slackTest.setopt(slackTest.WRITEDATA,buffer)
 
 def ping():
     threading.Timer(300.0, ping).start()
@@ -41,14 +40,18 @@ def ping():
     slackTest.perform()
 
 def blink():
-    GPIO.output(17, GPIO.HIGH) #blue led off
-    time.sleep(1)
+    network_warning = (slackTest.getinfo(pycurl.RESPONSE_CODE) != 200)
     GPIO.output(17, GPIO.LOW) #blue led on
+    if network_warning:
+        GPIO.output(18, GPIO.LOW) #red led on
+    time.sleep(1)
+    GPIO.output(17, GPIO.HIGH) #blue led off
+    if network_warning:
+        GPIO.output(18, GPIO.HIGH) #red led off
     threading.Timer(1.0, blink).start()
 
 ping()
 blink()
-
 
 while True:
     input_state = GPIO.input(4)    
