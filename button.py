@@ -16,8 +16,8 @@ GPIO.setup(18, GPIO.OUT) #red
 GPIO.setup(22, GPIO.OUT) #amber
 GPIO.setup(23, GPIO.OUT) #green
 
-print('hello');
 GPIO.output(17, GPIO.HIGH) #blue led on
+print('hello');
 
 buffer = StringIO()
 dropbox = pycurl.Curl()
@@ -40,7 +40,14 @@ def ping():
     slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping foodcam v1: '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
     slackTest.perform()
 
+def blink():
+    GPIO.output(17, GPIO.LOW) #blue led off
+    time.sleep(1)
+    GPIO.output(17, GPIO.HIGH) #blue led on
+    threading.Timer(1.0, blink).start()
+
 ping()
+blink()
 
 
 while True:
