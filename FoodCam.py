@@ -35,16 +35,18 @@ slackTest.setopt(slackTest.WRITEDATA,buffer)
 
 GPIO.output(23, GPIO.HIGH) #green led off
 
+network_warning = False
+
 
 def ping():
-    threading.Timer(300.0, ping).start()
+    threading.Timer(60.0, ping).start()#300
     timer = time.gmtime()
     print "button ping: "+time.strftime('%b %d %Y %H:%M:%S',timer)
     slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping foodcam v1: '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
     slackTest.perform()
+    network_warning = (slackTest.getinfo(pycurl.RESPONSE_CODE) != 200)
 
 def blink():
-    network_warning = (slackTest.getinfo(pycurl.RESPONSE_CODE) != 200)
     GPIO.output(17, GPIO.LOW) #blue led on
     if network_warning:
         GPIO.output(18, GPIO.LOW) #red led on
@@ -81,7 +83,7 @@ def capture(channel):
     GPIO.output(22, GPIO.HIGH) #amber led off
     GPIO.output(23, GPIO.LOW) #green led on
     print('sent to slack')
-    time.sleep(2)
+    time.sleep(3)
     GPIO.output(23, GPIO.HIGH) #green led off
 
-GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=200)
+GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=5000)
