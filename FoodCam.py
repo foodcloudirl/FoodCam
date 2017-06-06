@@ -104,7 +104,7 @@ def capture(channel):
         time.sleep(3)
         GPIO.output(23, GPIO.HIGH) #green led off
 
-GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=10000)
+GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=20000)
 
 
 def exit():
