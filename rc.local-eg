@@ -1,0 +1,6 @@
+printf "**************************"
+printf "STARTING FOODCLOUD FOODCAM"
+printf "**************************"
+sudo motion &
+sudo sh /home/pi/button.sh &
+#add this before exit 0
