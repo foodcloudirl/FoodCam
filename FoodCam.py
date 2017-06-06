@@ -54,9 +54,9 @@ def blink():
         GPIO.output(18, GPIO.HIGH) #red led off
     threading.Timer(1.0, blink).start()
 
-def capture():
+def capture(channel):
     GPIO.output(18, GPIO.LOW) #red led on
-    print('Button Pressed')
+    print('Button Pressed, channel '+str(channel))
     dropbox.perform()
     time.sleep(1)
     GPIO.output(18, GPIO.HIGH) #red led off
