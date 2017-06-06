@@ -57,33 +57,51 @@ def blink():
     threading.Timer(1.0, blink).start()
 
 def capture(channel):
-    GPIO.output(18, GPIO.LOW) #red led on
-    print('Button Pressed, channel '+str(channel))
-    dropbox.perform()
-    time.sleep(1)
-    GPIO.output(18, GPIO.HIGH) #red led off
-    GPIO.output(22, GPIO.LOW) #amber led on
-    os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
-    time.sleep(1)
-    filename = os.readlink('/home/pi/motion/lastsnap.jpg')
-    print(filename)
-    bashIO = os.popen('bash /home/pi/FoodCam/dropbox_uploader.sh share /'+filename).read()
-    print(bashIO)
-    url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
-    print("dropbox url: "+str(url))
-    data = {'attachments':[{
-        'fallback':'Should be an image of tasty surplus food',
-        'text':'Hello, there is food going in the kitchen!!',
-        'image_url':str(url)
-    }]}
-    print(data)
-    js = json.dumps(data)
-    slack.setopt(slack.POSTFIELDS,js)
-    slack.perform()
-    GPIO.output(22, GPIO.HIGH) #amber led off
-    GPIO.output(23, GPIO.LOW) #green led on
-    print('sent to slack')
-    time.sleep(3)
-    GPIO.output(23, GPIO.HIGH) #green led off
+    if network_warning:
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        time.sleep(0.1)
+    else 
+        GPIO.output(18, GPIO.LOW) #red led on
+        print('Button Pressed, channel '+str(channel))
+        dropbox.perform()
+        time.sleep(1)
+        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(22, GPIO.LOW) #amber led on
+        os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
+        time.sleep(1)
+        filename = os.readlink('/home/pi/motion/lastsnap.jpg')
+        print(filename)
+        bashIO = os.popen('bash /home/pi/FoodCam/dropbox_uploader.sh share /'+filename).read()
+        print(bashIO)
+        url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
+        print("dropbox url: "+str(url))
+        data = {'attachments':[{
+            'fallback':'Should be an image of tasty surplus food',
+            'text':'Hello, there is food going in the kitchen!!',
+            'image_url':str(url)
+        }]}
+        print(data)
+        js = json.dumps(data)
+        slack.setopt(slack.POSTFIELDS,js)
+        slack.perform()
+        GPIO.output(22, GPIO.HIGH) #amber led off
+        GPIO.output(23, GPIO.LOW) #green led on
+        print('sent to slack')
+        time.sleep(3)
+        GPIO.output(23, GPIO.HIGH) #green led off
 
 GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=5000)
