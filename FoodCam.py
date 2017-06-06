@@ -36,7 +36,7 @@ slackTest.setopt(slackTest.WRITEDATA,buffer)
 
 GPIO.output(23, GPIO.HIGH) #green led off
 
-GPIO.add_event_detect(4, GPIO.FALLING, callback=FoodCam.capture, bouncetime=200)
+GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=200)
 
 def ping():
     threading.Timer(300.0, ping).start()
