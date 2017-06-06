@@ -15,7 +15,7 @@ FoodCam.blink()
 
 try:
     while True:
-        sleep (10)
+        time.sleep(10)
 except KeyboardInterrupt:
     GPIO.cleanup() #Clean up GPIO on CTRL+C exit
     GPIO.cleanup() #Clean up GPIO on normal exit

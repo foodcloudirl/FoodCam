@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-from time import sleep
 import os
 import pycurl
 from StringIO import StringIO
