@@ -58,23 +58,23 @@ def blink():
 
 def capture(channel):
     if network_warning:
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, GPIO.LOW) #red led on
         time.sleep(0.1)
         GPIO.output(18, GPIO.HIGH) #red led off
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, GPIO.LOW) #red led on
         time.sleep(0.1)
         GPIO.output(18, GPIO.HIGH) #red led off
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, GPIO.LOW) #red led on
         time.sleep(0.1)
         GPIO.output(18, GPIO.HIGH) #red led off
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, GPIO.LOW) #red led on
         time.sleep(0.1)
         GPIO.output(18, GPIO.HIGH) #red led off
         time.sleep(0.1)
-    else 
+    else:
         GPIO.output(18, GPIO.LOW) #red led on
         print('Button Pressed, channel '+str(channel))
         dropbox.perform()
@@ -104,4 +104,9 @@ def capture(channel):
         time.sleep(3)
         GPIO.output(23, GPIO.HIGH) #green led off
 
-GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=5000)
+GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=500)
+
+
+def exit():
+    GPIO.cleanup() #Clean up GPIO on CTRL+C exit
+    GPIO.cleanup() #Clean up GPIO on normal exit
