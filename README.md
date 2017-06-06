@@ -9,12 +9,12 @@ Everyone in the office will automatically get a picture of the food sent to them
 
 
 #####################################
-# Set up FoodCam
+## Set up FoodCam
 #####################################
 
 #####################################
-# Headless Setup of Pi
-# Download latest version of Raspian Jessie Lite from https://www.raspberrypi.org/downloads/raspbian/
+## Headless Setup of Pi
+## Download latest version of Raspian Jessie Lite from https://www.raspberrypi.org/downloads/raspbian/
 # Install Raspbian Jessie Lite on SD Card with Etcher
 
 # Create blank file called 'ssh' and add to boot partition
