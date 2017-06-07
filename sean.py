@@ -1,12 +1,12 @@
 import RPi.GPIO as GPIO
 import time
+from time import sleep
 import os
 import pycurl
 from StringIO import StringIO
 from urllib import urlencode
 import json
 import threading
-from time import sleep
 import settings
 
 GPIO.setmode(GPIO.BCM)
@@ -39,33 +39,33 @@ ping()
 
 
 def press():
-    	print('Button Pressed')
-	dropbox.perform()
-	time.sleep(1)
-	os.system('bash /home/pi/button/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
-	time.sleep(1)
-	filename = os.readlink('/home/pi/motion/lastsnap.jpg')
-	print(filename)
-	bashIO = os.popen('bash /home/pi/button/dropbox_uploader.sh share /'+filename).read()
-	print(bashIO)
-	url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
-	print("dropbox url: "+str(url))
-	data = {'attachments':[{
-		'fallback':'Should be an image of tasty surplus food',
-		'text':'Hello, there is food going in the kitchen!!',
-		'image_url':str(url)
-	}]}
-	print(data)
-	js = json.dumps(data)
-	slack.setopt(slack.POSTFIELDS,js)
-	slack.perform()
-	print('sent to slack')
+    print('Button Pressed')
+    dropbox.perform()
+    time.sleep(1)
+    os.system('bash /home/pi/button/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
+    time.sleep(1)
+    filename = os.readlink('/home/pi/motion/lastsnap.jpg')
+    print(filename)
+    bashIO = os.popen('bash /home/pi/button/dropbox_uploader.sh share /'+filename).read()
+    print(bashIO)
+    url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
+    print("dropbox url: "+str(url))
+    data = {'attachments':[{
+        'fallback':'Should be an image of tasty surplus food',
+        'text':'Hello, there is food going in the kitchen!!',
+        'image_url':str(url)
+    }]}
+    print(data)
+    js = json.dumps(data)
+    slack.setopt(slack.POSTFIELDS,js)
+    slack.perform()
+    print('sent to slack')
 
 GPIO.add_event_detect(4, GPIO.FALLING, callback=press, bouncetime=200)
 
 try:
-	while True:
-		sleep (10)
+    while True:
+        sleep (10)
 except KeyboardInterrupt:
-	GPIO.cleanup() #Clean up GPIO on CTRL+C exit
-	GPIO.cleanup() #Clean up GPIO on normal exit
+    GPIO.cleanup() #Clean up GPIO on CTRL+C exit
+    GPIO.cleanup() #Clean up GPIO on normal exit
