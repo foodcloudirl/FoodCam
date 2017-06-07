@@ -110,4 +110,4 @@ GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=20000)
 
 def exit():
     GPIO.cleanup() #Clean up GPIO on CTRL+C exit
-    GPIO.cleanup() #Clean up GPIO on normal exit
+
