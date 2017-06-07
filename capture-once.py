@@ -13,6 +13,6 @@ print('************* FOODCAM v1.2 *****************');
 FoodCam.ping()
 FoodCam.blink()
 
-FoodCam.capture()
+FoodCam.capture(0)
 
 FoodCam.exit()
