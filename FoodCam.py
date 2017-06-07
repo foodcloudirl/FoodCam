@@ -24,7 +24,7 @@ dropbox = pycurl.Curl()
 dropbox.setopt(dropbox.URL,'localhost:8080/0/action/snapshot')
 slack = pycurl.Curl()
 #slack.setopt(slack.URL,settings.slackUrl)
-slack.setopt(slack.URL,settings.slackTestUrl)#foodcam-test channel url
+slack.setopt(slack.URL,settings.slackUrl)#foodcam-test channel url
 slack.setopt(slack.HTTPHEADER,['Accept: application/json'])
 slack.setopt(slack.POST,1)
 slackTest = pycurl.Curl()
@@ -41,10 +41,12 @@ network_warning = False
 def ping():
     threading.Timer(60.0, ping).start()#300
     timer = time.gmtime()
-    print "button ping: "+time.strftime('%b %d %Y %H:%M:%S',timer)
     slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping foodcam v1: '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
     slackTest.perform()
     network_warning = (slackTest.getinfo(pycurl.RESPONSE_CODE) != 200)
+    if network_warning:
+        print("Network issue: "+str(slackTest.getinfo(pycurl.RESPONSE_CODE)))
+    print("button ping: "+time.strftime('%b %d %Y %H:%M:%S',timer))
 
 def blink():
     GPIO.output(17, GPIO.LOW) #blue led on
