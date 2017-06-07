@@ -93,7 +93,7 @@ def capture(channel):
         print("dropbox url: "+str(url))
         data = {'attachments':[{
             'fallback':'Should be an image of tasty surplus food',
-            'text':'Hello, there is food going in the kitchen!!',
+            'text':'Hello'+settings.recipient+', there is surplus food available in: '+settings.location,
             'image_url':str(url)
         }]}
         print(data)
