@@ -16,9 +16,9 @@ GPIO.setup(17, GPIO.OUT) #blue
 GPIO.setup(18, GPIO.OUT) #red
 GPIO.setup(22, GPIO.OUT) #amber
 GPIO.setup(23, GPIO.OUT) #green
-GPIO.output(17, GPIO.HIGH) #blue led off
-GPIO.output(18, GPIO.HIGH) #red led off
-GPIO.output(22, GPIO.HIGH) #amber led off
+GPIO.output(17, settings.off) #blue led off
+GPIO.output(18, settings.off) #red led off
+GPIO.output(22, settings.off) #amber led off
 
 buffer = StringIO()
 dropbox = pycurl.Curl()
@@ -34,7 +34,7 @@ slackTest.setopt(slack.HTTPHEADER,['Accept: application/json'])
 slackTest.setopt(slack.POST,1)
 slackTest.setopt(slackTest.WRITEDATA,buffer)
 
-GPIO.output(23, GPIO.HIGH) #green led off
+GPIO.output(23, settings.off) #green led off
 
 network_warning = False
 
@@ -51,13 +51,13 @@ def ping():
     print("button ping: "+ip+", "+time.strftime('%b %d %Y %H:%M:%S',timer)+" UTC")
 
 def blink():
-    GPIO.output(17, GPIO.LOW) #blue led on
+    GPIO.output(17, settings.on) #blue led on
     if network_warning:
-        GPIO.output(18, GPIO.LOW) #red led on
+        GPIO.output(18, settings.on) #red led on
     time.sleep(1)
-    GPIO.output(17, GPIO.HIGH) #blue led off
+    GPIO.output(17, settings.off) #blue led off
     if network_warning:
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, settings.off) #red led off
     threading.Timer(1.0, blink).start()
 
 def get_ip_address():
@@ -70,29 +70,29 @@ def get_ip_address():
 
 def capture(channel):
     if network_warning:
-        GPIO.output(18, GPIO.LOW) #red led on
+        GPIO.output(18, settings.on) #red led on
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, settings.off) #red led off
         time.sleep(0.1)
-        GPIO.output(18, GPIO.LOW) #red led on
+        GPIO.output(18, settings.on) #red led on
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, settings.off) #red led off
         time.sleep(0.1)
-        GPIO.output(18, GPIO.LOW) #red led on
+        GPIO.output(18, settings.on) #red led on
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, settings.off) #red led off
         time.sleep(0.1)
-        GPIO.output(18, GPIO.LOW) #red led on
+        GPIO.output(18, settings.on) #red led on
         time.sleep(0.1)
-        GPIO.output(18, GPIO.HIGH) #red led off
+        GPIO.output(18, settings.off) #red led off
         time.sleep(0.1)
     else:
-        GPIO.output(18, GPIO.LOW) #red led on
+        GPIO.output(18, settings.on) #red led on
         print('Button Pressed, channel '+str(channel))
         dropbox.perform()
         time.sleep(1)
-        GPIO.output(18, GPIO.HIGH) #red led off
-        GPIO.output(22, GPIO.LOW) #amber led on
+        GPIO.output(18, settings.off) #red led off
+        GPIO.output(22, settings.on) #amber led on
         os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
         time.sleep(1)
         filename = os.readlink('/home/pi/motion/lastsnap.jpg')
@@ -110,11 +110,11 @@ def capture(channel):
         js = json.dumps(data)
         slack.setopt(slack.POSTFIELDS,js)
         slack.perform()
-        GPIO.output(22, GPIO.HIGH) #amber led off
-        GPIO.output(23, GPIO.LOW) #green led on
+        GPIO.output(22, settings.off) #amber led off
+        GPIO.output(23, settings.on) #green led on
         print('sent to slack')
         time.sleep(3)
-        GPIO.output(23, GPIO.HIGH) #green led off
+        GPIO.output(23, settings.off) #green led off
 
 GPIO.add_event_detect(4, GPIO.FALLING, callback=capture, bouncetime=20000)
 
