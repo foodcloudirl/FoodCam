@@ -7,6 +7,7 @@ from urllib import urlencode
 import json
 import threading
 import settings
+import socket
 
 #GPIO Setup
 GPIO.setmode(GPIO.BCM)
@@ -41,12 +42,13 @@ network_warning = False
 def ping():
     threading.Timer(60.0, ping).start()#300
     timer = time.gmtime()
-    slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping foodcam v1: '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
+    ip = get_ip_address()
+    slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping foodcam v2 ('+ip+'): '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
     slackTest.perform()
     network_warning = (slackTest.getinfo(pycurl.RESPONSE_CODE) != 200)
     if network_warning:
         print("Network issue: "+str(slackTest.getinfo(pycurl.RESPONSE_CODE)))
-    print("button ping: "+time.strftime('%b %d %Y %H:%M:%S',timer))
+    print("button ping: "+ip+", "+time.strftime('%b %d %Y %H:%M:%S',timer)+" UTC")
 
 def blink():
     GPIO.output(17, GPIO.LOW) #blue led on
@@ -57,6 +59,14 @@ def blink():
     if network_warning:
         GPIO.output(18, GPIO.HIGH) #red led off
     threading.Timer(1.0, blink).start()
+
+def get_ip_address():
+    ip_address = '';
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8",80))
+    ip_address = s.getsockname()[0]
+    s.close()
+    return ip_address
 
 def capture(channel):
     if network_warning:
