@@ -43,7 +43,7 @@ def ping():
     threading.Timer(60.0, ping).start()#300
     timer = time.gmtime()
     ip = get_ip_address()
-    slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping foodcam v2 ('+ip+'): '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
+    slackTest.setopt(slackTest.POSTFIELDS,'{"text":"ping from '+settings.location+' foodcam ('+ip+'): '+time.strftime('%b %d %Y %H:%M:%S',timer)+'"}')
     slackTest.perform()
     network_warning = (slackTest.getinfo(pycurl.RESPONSE_CODE) != 200)
     if network_warning:

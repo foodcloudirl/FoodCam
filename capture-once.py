@@ -8,10 +8,7 @@ import json
 import threading
 import FoodCam
 
-print('************* FOODCAM v1.2 *****************');
-
-FoodCam.ping()
-FoodCam.blink()
+print('************* FOODCAM v1.3 *****************');
 
 FoodCam.capture(0)
 
