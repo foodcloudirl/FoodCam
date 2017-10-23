@@ -102,8 +102,8 @@ def capture(channel):
         url = bashIO.split('link: ')[1].replace('dl=0\n','raw=1')
         print("dropbox url: "+str(url))
         data = {'attachments':[{
-            'fallback':'Should be an image of tasty surplus food',
-            'text':'Hello '+settings.recipient+', there is surplus food available in '+settings.location,
+            'fallback':'A picture of tasty surplus food!',
+            'text':'Hello '+settings.recipient+', there is surplus food available in '+settings.location+'!',
             'image_url':str(url)
         }]}
         print(data)
