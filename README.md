@@ -41,26 +41,34 @@ sudo raspi-config
 # Follow dialog to enable camera and change hostname to foodcam
 
 #####################################
-# Update Image
+# Update Image, Install motion
 #####################################
 sudo apt-get update
 sudo apt-get upgrade
 # Make some coffee - takes a bit of time!
 sudo apt-get install motion
 
+#####################################
+# Clone the github folder to the raspi
+#####################################
+cd ~
+git clone THE_URL_OF_THE REPO
+cd FoodCloud-FoodCam
 
 #####################################
-# Install Motion
+# Set motion to run at boot
 #####################################
-sudo apt-get install motion
 
 sudo nano /etc/rc.local
-
-# before exit=0 type:
-modprobe bcm2835-v4l2
+# place code before exit=0:
+    printf "**************************"
+    printf "STARTING FOODCLOUD FOODCAM"
+    printf "**************************"
+    sudo motion &
+    sudo sh /home/pi/button.sh &
 
 sudo nano /etc/default/motion
-# set to yes
+# set to no
 
 #####################################
 # Update motion.conf

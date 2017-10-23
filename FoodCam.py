@@ -21,8 +21,8 @@ GPIO.output(18, settings.off) #red led off
 GPIO.output(22, settings.off) #amber led off
 
 buffer = StringIO()
-dropbox = pycurl.Curl()
-dropbox.setopt(dropbox.URL,'localhost:8080/0/action/snapshot')
+image_control = pycurl.Curl()
+image_control.setopt(image_control.URL,'localhost:8080/0/action/snapshot')
 slack = pycurl.Curl()
 #slack.setopt(slack.URL,settings.slackUrl)
 slack.setopt(slack.URL,settings.slackUrl)#foodcam-test channel url
@@ -88,9 +88,10 @@ def capture(channel):
         time.sleep(0.1)
     else:
         GPIO.output(18, settings.on) #red led on
-        print('Button Pressed, channel '+str(channel))
-        dropbox.perform()
+        print('Button Pressed, channel '+str(channel
         time.sleep(1)
+        image_control.perform()
+        time.sleep(0.6)
         GPIO.output(18, settings.off) #red led off
         GPIO.output(22, settings.on) #amber led on
         os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
