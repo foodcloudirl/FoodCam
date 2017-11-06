@@ -88,7 +88,7 @@ def capture(channel):
         time.sleep(0.1)
     else:
         GPIO.output(18, settings.on) #red led on
-        print('Button Pressed, channel '+str(channel
+        print('Button Pressed, channel '+str(channel))
         time.sleep(1)
         image_control.perform()
         time.sleep(0.6)
