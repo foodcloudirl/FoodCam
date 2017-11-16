@@ -90,11 +90,11 @@ def get_ip_address():
     return ip_address
 
 def resetCategories():
-    has_bakery=0
-    has_grocery=0
-    has_pantry=0
-    has_chilled=0
-    has_non_food=0
+    global has_bakery=0
+    global has_grocery=0
+    global has_pantry=0
+    global has_chilled=0
+    global has_non_food=0
 resetCategories()
 
 def authCopia():
@@ -103,27 +103,27 @@ def authCopia():
 authCopia()
 
 def updateCategoryLights():
-    if has_bakery:
-        GPIO.output(settings.bakery, settings.on)
+    if has_bakery==1:
+        GPIO.output(settings.bakery_led, settings.on)
     else:
-        GPIO.output(settings.bakery, settings.off)
-    if has_grocery:
-        GPIO.output(settings.grocery, settings.on)
+        GPIO.output(settings.bakery_led, settings.off)
+    if has_grocery==1:
+        GPIO.output(settings.grocery_led, settings.on)
     else:
-        GPIO.output(settings.grocery, settings.off)
-    if has_pantry:
-        GPIO.output(settings.pantry, settings.on)
+        GPIO.output(settings.grocery_led, settings.off)
+    if has_pantry==1:
+        GPIO.output(settings.pantry_led, settings.on)
     else:
-        GPIO.output(settings.pantry, settings.off)
-    if has_chilled:
-        GPIO.output(settings.chilled, settings.on)
+        GPIO.output(settings.pantry_led, settings.off)
+    if has_chilled==1:
+        GPIO.output(settings.chilled_led, settings.on)
     else:
-        GPIO.output(settings.chilled, settings.off)
-    if has_non_food:
-        GPIO.output(settings.non_food, settings.on)
+        GPIO.output(settings.chilled_led, settings.off)
+    if has_non_food==1:
+        GPIO.output(settings.non_food_led, settings.on)
     else:
-        GPIO.output(settings.non_food, settings.off)
-    print("Categories: "+has_bakery+","+has_grocery+","+has_pantry+","+has_chilled+","+has_non_food+".")
+        GPIO.output(settings.non_food_led, settings.off)
+    print("Categories: "+str(has_bakery)+","+str(has_grocery)+","+str(has_pantry)+","+str(has_chilled)+","+str(has_non_food)+".")
 
 def sendCategories(channel):
     cat_text = ""
@@ -151,14 +151,19 @@ def addCategory(channel):
     print("Button pressed on channel: "+str(channel))
     if channel==settings.bakery:
         has_bakery = 1
+        print("bakery")
     elif channel==settings.grocery:
         has_grocery = 1
+        print("grocery")
     elif channel==settings.pantry:
         has_pantry = 1
+        print("pantry")
     elif channel==settings.chilled:
         has_chilled = 1
+        print("chilled")
     elif channel==settings.non_food:
         has_non_food = 1
+        print("non_food")
     else:
         print("Unknown category")
     updateCategoryLights()
