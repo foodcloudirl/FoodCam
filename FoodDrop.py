@@ -12,10 +12,21 @@ import socket
 #GPIO Setup
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(settings.button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(settings.bakery, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(settings.grocery, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(settings.pantry, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(settings.chilled, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(settings.non_food, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(settings.blue, GPIO.OUT) #blue
 GPIO.setup(settings.red, GPIO.OUT) #red
 GPIO.setup(settings.amber, GPIO.OUT) #amber
 GPIO.setup(settings.green, GPIO.OUT) #green
+GPIO.setup(settings.bakery_led, GPIO.OUT)
+GPIO.setup(settings.grocery_led, GPIO.OUT)
+GPIO.setup(settings.pantry_led, GPIO.OUT)
+GPIO.setup(settings.chilled_led, GPIO.OUT)
+GPIO.setup(settings.non_food_led, GPIO.OUT)
+
 GPIO.output(settings.blue, settings.off) #blue led off
 GPIO.output(settings.red, settings.off) #red led off
 GPIO.output(settings.amber, settings.off) #amber led off
@@ -45,6 +56,11 @@ copia.setopt(copia.POST,1)
 GPIO.output(23, settings.off) #green led off
 
 network_warning = False
+has_bakery=0
+has_grocery=0
+has_pantry=0
+has_chilled=0
+has_non_food=0
 
 
 def ping():
@@ -79,13 +95,15 @@ def get_ip_address():
 def resetCategories():
     has_bakery=0
     has_grocery=0
-    has_pantry=1
+    has_pantry=0
     has_chilled=0
     has_non_food=0
+resetCategories()
 
 def authCopia():
     #curl -c cookie.jar -i --data "email=some.email@address.com&password=somepassword"  https://copia-c.food.cloud
     print("todo")
+authCopia()
 
 def updateCategoryLights():
     if has_bakery:
@@ -108,8 +126,9 @@ def updateCategoryLights():
         GPIO.output(settings.non_food, settings.on)
     else:
         GPIO.output(settings.non_food, settings.off)
+    print("Categories: "+has_bakery+","+has_grocery+","+has_pantry+","+has_chilled+","+has_non_food+".")
 
-def sendCategories():
+def sendCategories(channel):
     cat_text = ""
     if has_bakery:
         cat_text+="bakery, "
@@ -128,30 +147,33 @@ def sendCategories():
     js = json.dumps(data)
     slack.setopt(slack.POSTFIELDS,js)
     slack.perform()
+    print("Sent")
+    resetCategories()
 
 def addCategory(channel):
-    if channel=settings.bakery:
+    print("Button pressed on channel: "+str(channel))
+    if channel==settings.bakery:
         has_bakery = 1
-    elif channel=settings.grocery:
+    elif channel==settings.grocery:
         has_grocery = 1
-    elif channel=settings.pantry:
+    elif channel==settings.pantry:
         has_pantry = 1
-    elif channel=settings.chilled:
+    elif channel==settings.chilled:
         has_chilled = 1
-    elif channel=settings.non_food:
+    elif channel==settings.non_food:
         has_non_food = 1
-    else print("Unknown category")
+    else:
+        print("Unknown category")
     updateCategoryLights()
-    print("Categories: "+has_bakery+","+has_grocery+","+has_pantry+","+has_chilled+","+has_non_food+".")
 
 resetCategories()
-GPIO.add_event_detect(settings.bakery, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-GPIO.add_event_detect(settings.grocery, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-GPIO.add_event_detect(settings.pantry, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-GPIO.add_event_detect(settings.chilled, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-GPIO.add_event_detect(settings.non_food, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-
-GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=sendCategories, bouncetime=2000)
+def setup():
+    GPIO.add_event_detect(settings.bakery, GPIO.FALLING, callback=addCategory, bouncetime=2000)
+    GPIO.add_event_detect(settings.grocery, GPIO.FALLING, callback=addCategory, bouncetime=2000)
+    GPIO.add_event_detect(settings.pantry, GPIO.FALLING, callback=addCategory, bouncetime=2000)
+    GPIO.add_event_detect(settings.chilled, GPIO.FALLING, callback=addCategory, bouncetime=2000)
+    GPIO.add_event_detect(settings.non_food, GPIO.FALLING, callback=addCategory, bouncetime=2000)
+    GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=sendCategories, bouncetime=2000)
 
 def exit():
     GPIO.cleanup() #Clean up GPIO on CTRL+C exit
