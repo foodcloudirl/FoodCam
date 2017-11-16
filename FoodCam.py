@@ -11,14 +11,15 @@ import socket
 
 #GPIO Setup
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(17, GPIO.OUT) #blue
-GPIO.setup(18, GPIO.OUT) #red
-GPIO.setup(22, GPIO.OUT) #amber
-GPIO.setup(23, GPIO.OUT) #green
-GPIO.output(17, settings.off) #blue led off
-GPIO.output(18, settings.off) #red led off
-GPIO.output(22, settings.off) #amber led off
+GPIO.setup(settings.button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(settings.blue, GPIO.OUT) #blue
+GPIO.setup(settings.red, GPIO.OUT) #red
+GPIO.setup(settings.amber, GPIO.OUT) #amber
+GPIO.setup(settings.green, GPIO.OUT) #green
+GPIO.output(settings.blue, settings.off) #blue led off
+GPIO.output(settings.red, settings.off) #red led off
+GPIO.output(settings.amber, settings.off) #amber led off
+GPIO.output(settings.green, settings.off) #green led off
 
 buffer = StringIO()
 image_control = pycurl.Curl()
