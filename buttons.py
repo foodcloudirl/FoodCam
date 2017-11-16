@@ -10,8 +10,8 @@ import FoodDrop
 
 print('************* FOODDROP v1.0 *****************');
 
-FoodCam.ping()
-FoodCam.blink()
+FoodDrop.ping()
+FoodDrop.blink()
 
 try:
     while True:

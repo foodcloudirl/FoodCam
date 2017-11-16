@@ -85,6 +85,7 @@ def resetCategories():
 
 def authCopia():
     #curl -c cookie.jar -i --data "email=some.email@address.com&password=somepassword"  https://copia-c.food.cloud
+    print("todo")
 
 def updateCategoryLights():
     if has_bakery:

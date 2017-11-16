@@ -4,6 +4,9 @@
 # motion
 sudo apt-get install motion
 
+# pycurl
+sudo apt-get install python-pycurl
+
 # button.sh
 cp button-eg.sh ../button.sh
 
