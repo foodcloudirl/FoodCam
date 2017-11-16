@@ -18,13 +18,19 @@ Everyone in the office will automatically get a picture of the food sent to them
 # Install Raspbian Jessie Lite on SD Card with Etcher
 
 # Create blank file called 'ssh' and add to boot partition
-# Create file called 'wpa_supplicant.conf' and add to boot partition
+# Create file called 'wpa_supplicant.conf' with the network details below and add to boot partition
+# OR
+# Turn on the Pi with a pre-loaded OS, preferabably some Raspian flavour
+# With a monitor and keyboard connected, sudo nano /etc/wpa_supplicant/wpa_supplicant.conf to have the network details:
+
 
 network={
 ssid="NETWORK NAME"
 psk="PASSWORD"
 key_mgmt=WPA-PSK
 }
+
+
 
 #####################################
 # 1st boot
@@ -33,12 +39,30 @@ key_mgmt=WPA-PSK
 sudo passwd
 # Follow Instructions to change password
 
-
 #####################################
 # Change raspi-config 
 #####################################
 sudo raspi-config
-# Follow dialog to enable camera and change hostname to foodcam
+# Follow dialog to enable camera and change hostname to foodcam, enable raspicam and ssh
+
+#####################################
+# Clone the github folder to the raspi
+#####################################
+cd ~
+git clone THE_URL_OF_THIS_REPO
+cd FoodCam
+
+
+#####################################
+# Run the setup shell script
+#####################################
+sudo sh setup.sh
+
+
+#####################################
+# OR follow the steps below
+#####################################
+
 
 #####################################
 # Update Image, Install motion
@@ -48,12 +72,6 @@ sudo apt-get upgrade
 # Make some coffee - takes a bit of time!
 sudo apt-get install motion
 
-#####################################
-# Clone the github folder to the raspi
-#####################################
-cd ~
-git clone THE_URL_OF_THE REPO
-cd FoodCloud-FoodCam
 
 #####################################
 # Set motion to run at boot
