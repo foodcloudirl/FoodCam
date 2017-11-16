@@ -52,9 +52,6 @@ copia.setopt(copia.URL,settings.copiaUrl)#foodcam-test channel url
 copia.setopt(copia.HTTPHEADER,['Accept: application/json'])
 copia.setopt(copia.POST,1)
 
-
-GPIO.output(23, settings.off) #green led off
-
 network_warning = False
 has_bakery=0
 has_grocery=0
@@ -75,13 +72,13 @@ def ping():
     print("button ping: "+ip+", "+time.strftime('%b %d %Y %H:%M:%S',timer)+" UTC")
 
 def blink():
-    GPIO.output(17, settings.on) #blue led on
+    GPIO.output(settings.blue, settings.on) #blue led on
     if network_warning:
-        GPIO.output(18, settings.on) #red led on
+        GPIO.output(settings.red, settings.on) #red led on
     time.sleep(1)
-    GPIO.output(17, settings.off) #blue led off
+    GPIO.output(settings.blue, settings.off) #blue led off
     if network_warning:
-        GPIO.output(18, settings.off) #red led off
+        GPIO.output(settings.blue, settings.off) #red led off
     threading.Timer(1.0, blink).start()
 
 def get_ip_address():
