@@ -61,6 +61,7 @@ has_non_food=0
 
 
 def ping():
+    global network_warning
     threading.Timer(60.0, ping).start()#300
     timer = time.gmtime()
     ip = get_ip_address()
@@ -72,6 +73,7 @@ def ping():
     print("button ping: "+ip+", "+time.strftime('%b %d %Y %H:%M:%S',timer)+" UTC")
 
 def blink():
+    global network_warning
     GPIO.output(settings.blue, settings.on) #blue led on
     if network_warning:
         GPIO.output(settings.red, settings.on) #red led on
@@ -89,20 +91,13 @@ def get_ip_address():
     s.close()
     return ip_address
 
-def resetCategories():
-    global has_bakery=0
-    global has_grocery=0
-    global has_pantry=0
-    global has_chilled=0
-    global has_non_food=0
-resetCategories()
-
 def authCopia():
     #curl -c cookie.jar -i --data "email=some.email@address.com&password=somepassword"  https://copia-c.food.cloud
     print("todo")
 authCopia()
 
 def updateCategoryLights():
+    global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
     if has_bakery==1:
         GPIO.output(settings.bakery_led, settings.on)
     else:
@@ -125,7 +120,18 @@ def updateCategoryLights():
         GPIO.output(settings.non_food_led, settings.off)
     print("Categories: "+str(has_bakery)+","+str(has_grocery)+","+str(has_pantry)+","+str(has_chilled)+","+str(has_non_food)+".")
 
+def resetCategories():
+    global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
+    has_bakery=0
+    has_grocery=0
+    has_pantry=0
+    has_chilled=0
+    has_non_food=0
+    updateCategoryLights()
+resetCategories()
+
 def sendCategories(channel):
+    global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
     cat_text = ""
     if has_bakery:
         cat_text+="bakery, "
@@ -137,6 +143,9 @@ def sendCategories(channel):
         cat_text+="chilled, "
     if has_non_food:
         cat_text+="non_food, "
+    if cat_text == "":
+        cat_text+="no surplus food"
+    resetCategories()
     data = {
         'text':'Hello '+settings.recipient+', there is '+cat_text[:-2]+' available in '+settings.location+'!'
     }
@@ -145,9 +154,9 @@ def sendCategories(channel):
     slack.setopt(slack.POSTFIELDS,js)
     slack.perform()
     print("Sent")
-    resetCategories()
 
 def addCategory(channel):
+    global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
     print("Button pressed on channel: "+str(channel))
     if channel==settings.bakery:
         has_bakery = 1
@@ -175,7 +184,7 @@ def setup():
     GPIO.add_event_detect(settings.pantry, GPIO.FALLING, callback=addCategory, bouncetime=2000)
     GPIO.add_event_detect(settings.chilled, GPIO.FALLING, callback=addCategory, bouncetime=2000)
     GPIO.add_event_detect(settings.non_food, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-    GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=sendCategories, bouncetime=2000)
+    GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=sendCategories, bouncetime=10000)# needs to be longer than the process in sendCategories
 
 def exit():
     GPIO.cleanup() #Clean up GPIO on CTRL+C exit
