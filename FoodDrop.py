@@ -146,7 +146,7 @@ def sendCategories(channel):
     if cat_text == "":
         cat_text+="no surplus food"
     else:
-        cat_text = cat_text[:-2]_" trays"
+        cat_text = cat_text[:-2]+" trays"
     resetCategories()
     data = {
         'text':'Hello '+settings.recipient+', there is '+cat_text+' available in '+settings.location+'!'
