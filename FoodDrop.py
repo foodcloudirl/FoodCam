@@ -98,23 +98,23 @@ authCopia()
 
 def updateCategoryLights():
     global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
-    if has_bakery==1:
+    if has_bakery > 0:
         GPIO.output(settings.bakery_led, settings.on)
     else:
         GPIO.output(settings.bakery_led, settings.off)
-    if has_grocery==1:
+    if has_grocery > 0:
         GPIO.output(settings.grocery_led, settings.on)
     else:
         GPIO.output(settings.grocery_led, settings.off)
-    if has_pantry==1:
+    if has_pantry > 0:
         GPIO.output(settings.pantry_led, settings.on)
     else:
         GPIO.output(settings.pantry_led, settings.off)
-    if has_chilled==1:
+    if has_chilled > 0:
         GPIO.output(settings.chilled_led, settings.on)
     else:
         GPIO.output(settings.chilled_led, settings.off)
-    if has_non_food==1:
+    if has_non_food > 0:
         GPIO.output(settings.non_food_led, settings.on)
     else:
         GPIO.output(settings.non_food_led, settings.off)
@@ -134,17 +134,19 @@ def sendCategories(channel):
     global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
     cat_text = ""
     if has_bakery:
-        cat_text+="bakery, "
+        cat_text+=str(has_bakery)+" bakery, "
     if has_grocery:
-        cat_text+="grocery, "
+        cat_text+=str(has_grocery)+" grocery, "
     if has_pantry:
-        cat_text+="pantry, "
+        cat_text+=str(has_pantry)+" pantry, "
     if has_chilled:
-        cat_text+="chilled, "
+        cat_text+=str(has_chilled)+" chilled, "
     if has_non_food:
-        cat_text+="non_food, "
+        cat_text+=str(has_non_food)+" non_food, "
     if cat_text == "":
-        cat_text+="no surplus food"
+        cat_text+="no surplus food--"# dashes for substring [:-2] below
+    else:
+        cat_text += "trays"
     resetCategories()
     data = {
         'text':'Hello '+settings.recipient+', there is '+cat_text[:-2]+' available in '+settings.location+'!'
@@ -155,27 +157,41 @@ def sendCategories(channel):
     slack.perform()
     print("Sent")
 
+def isHeld(channel):
+    channel_pressed = GPIO.input(channel)
+    if channel_pressed == False:
+        print("held: "+str(channel))
+        addCategory()
+        
+
 def addCategory(channel):
     global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
     print("Button pressed on channel: "+str(channel))
     if channel==settings.bakery:
-        has_bakery = 1
+        has_bakery += 1
+        has_bakery %= 20
         print("bakery")
     elif channel==settings.grocery:
-        has_grocery = 1
+        has_grocery += 1
+        has_grocery %= 20
         print("grocery")
     elif channel==settings.pantry:
-        has_pantry = 1
+        has_pantry += 1
+        has_pantry %= 20
         print("pantry")
     elif channel==settings.chilled:
-        has_chilled = 1
+        has_chilled += 1
+        has_chilled %= 20
         print("chilled")
     elif channel==settings.non_food:
-        has_non_food = 1
+        has_non_food += 1
+        has_non_food %= 20
         print("non_food")
     else:
         print("Unknown category")
     updateCategoryLights()
+    time.sleep(0.3)
+    isHeld(channel)#repeat if held
 
 resetCategories()
 def setup():
