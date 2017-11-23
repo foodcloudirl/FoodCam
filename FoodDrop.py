@@ -144,12 +144,12 @@ def sendCategories(channel):
     if has_non_food:
         cat_text+=str(has_non_food)+" non_food, "
     if cat_text == "":
-        cat_text+="no surplus food--"# dashes for substring [:-2] below
+        cat_text+="no surplus food"
     else:
-        cat_text += "trays"
+        cat_text = cat_text[:-2]_" trays"
     resetCategories()
     data = {
-        'text':'Hello '+settings.recipient+', there is '+cat_text[:-2]+' available in '+settings.location+'!'
+        'text':'Hello '+settings.recipient+', there is '+cat_text+' available in '+settings.location+'!'
     }
     print(data)
     js = json.dumps(data)
@@ -161,7 +161,7 @@ def isHeld(channel):
     channel_pressed = GPIO.input(channel)
     if channel_pressed == False:
         print("held: "+str(channel))
-        addCategory()
+        addCategory(channel)
         
 
 def addCategory(channel):
@@ -169,23 +169,23 @@ def addCategory(channel):
     print("Button pressed on channel: "+str(channel))
     if channel==settings.bakery:
         has_bakery += 1
-        has_bakery %= 20
+        has_bakery %= settings.max_quantity
         print("bakery")
     elif channel==settings.grocery:
         has_grocery += 1
-        has_grocery %= 20
+        has_grocery %= settings.max_quantity
         print("grocery")
     elif channel==settings.pantry:
         has_pantry += 1
-        has_pantry %= 20
+        has_pantry %= settings.max_quantity
         print("pantry")
     elif channel==settings.chilled:
         has_chilled += 1
-        has_chilled %= 20
+        has_chilled %= settings.max_quantity
         print("chilled")
     elif channel==settings.non_food:
         has_non_food += 1
-        has_non_food %= 20
+        has_non_food %= settings.max_quantity
         print("non_food")
     else:
         print("Unknown category")

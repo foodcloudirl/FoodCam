@@ -26,3 +26,5 @@ grocery_led=7
 pantry_led=8
 chilled_led=9
 non_food_led=10
+
+max_quantity=2# 2 means food or no food, 10 means 0-9 trays etc
