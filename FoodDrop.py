@@ -157,14 +157,14 @@ def sendCategories(channel):
     slack.perform()
     print("Sent")
 
-def isHeld(channel):
+def isHeld(channel, count):
     channel_pressed = GPIO.input(channel)
     if channel_pressed == False:
         print("held: "+str(channel))
-        addCategory(channel)
+        addCategory(channel, count + 1)
         
 
-def addCategory(channel):
+def addCategory(channel, count = 0):
     global has_bakery,has_grocery,has_pantry,has_chilled,has_non_food
     print("Button pressed on channel: "+str(channel))
     if channel==settings.bakery:
@@ -190,16 +190,19 @@ def addCategory(channel):
     else:
         print("Unknown category")
     updateCategoryLights()
-    time.sleep(0.3)
-    isHeld(channel)#repeat if held
+    if (count == 1): 
+        time.sleep(1)
+    else:
+        time.sleep(0.4)
+    isHeld(channel, count)#repeat if held
 
 resetCategories()
 def setup():
-    GPIO.add_event_detect(settings.bakery, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-    GPIO.add_event_detect(settings.grocery, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-    GPIO.add_event_detect(settings.pantry, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-    GPIO.add_event_detect(settings.chilled, GPIO.FALLING, callback=addCategory, bouncetime=2000)
-    GPIO.add_event_detect(settings.non_food, GPIO.FALLING, callback=addCategory, bouncetime=2000)
+    GPIO.add_event_detect(settings.bakery, GPIO.FALLING, callback=addCategory, bouncetime=1000)
+    GPIO.add_event_detect(settings.grocery, GPIO.FALLING, callback=addCategory, bouncetime=1000)
+    GPIO.add_event_detect(settings.pantry, GPIO.FALLING, callback=addCategory, bouncetime=1000)
+    GPIO.add_event_detect(settings.chilled, GPIO.FALLING, callback=addCategory, bouncetime=1000)
+    GPIO.add_event_detect(settings.non_food, GPIO.FALLING, callback=addCategory, bouncetime=1000)
     GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=sendCategories, bouncetime=10000)# needs to be longer than the process in sendCategories
 
 def exit():
