@@ -52,11 +52,11 @@ def blink():
     GPIO.output(settings.blue, settings.on) #blue led on
     if network_warning:
         GPIO.output(settings.red, settings.on) #red led on
-    time.sleep(1)
+    time.sleep(5)
     GPIO.output(settings.blue, settings.off) #blue led off
     if network_warning:
         GPIO.output(settings.red, settings.off) #red led off
-    threading.Timer(1.0, blink).start()
+    threading.Timer(0.5, blink).start()
 
 def get_ip_address():
     ip_address = '';
