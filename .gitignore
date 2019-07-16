@@ -1,3 +1,6 @@
+.DS_Store
+hx711py/
+rpi_ws281x/
 settings.py
 *.sublime*
 *.pyc
