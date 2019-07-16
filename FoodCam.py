@@ -81,17 +81,38 @@ def led_off(leds):#array [red,amber,green,blue]
     if leds[3]:
         GPIO.output(settings.blue, settings.off)
     
-# Define functions which animate LEDs in various ways.
 def blue_spin(i = 0):
     global leds
-    """Wipe color across display a pixel at a time."""
-    new_i = (i+1)%leds.numPixels()
-    threading.Timer(0.05, blue_spin, new_i).start()
+    threading.Timer(0.05, blue_spin, [(i+1)%leds.numPixels()]).start() # keep spinning every 50ms
     leds.setPixelColor((i-2)%leds.numPixels(), Color(64, 64, 64)) # dim white
     leds.setPixelColor((i-1)%leds.numPixels(), Color(64, 78, 128)) # blueish white
     leds.setPixelColor(i, Color(64, 90, 255)) # blue
     leds.setPixelColor((i+1)%leds.numPixels(), Color(64, 78, 255)) # blueish white
     leds.show()
+
+def white():
+    global leds
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, Color(255,255,255))
+    strip.show()
+
+def green():
+    global leds
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, Color(0,255,0))
+    strip.show()
+
+def amber():
+    global leds
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, Color(255,255,0))
+    strip.show()
+
+def red():
+    global leds
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, Color(255,0,0))
+    strip.show()
 
 
 def ping():
@@ -261,6 +282,8 @@ def capture(channel):
     global network_warning
     now = time.time()
     led_on([1,0,0,0]) #red led on
+    if settings.leds_enabled:
+        white()
     print('Button Pressed, channel '+str(channel))
     time.sleep(1.1)
     try:
@@ -282,6 +305,8 @@ def capture(channel):
     time.sleep(0.6)
     led_off([1,0,0,0]) #red led off
     led_on([0,1,0,0]) #amber led on
+    if settings.leds_enabled:
+        amber()
     os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
     time.sleep(1)
     filename = os.readlink('/home/pi/motion/lastsnap.jpg')
@@ -296,12 +321,16 @@ def capture(channel):
     send_email(url,weight_str)
     led_off([0,1,0,0]) #amber led off
     led_on([0,0,1,0]) #green led on
+    if settings.leds_enabled:
+        green()
     later = time.time()
     capture_time = int(later - now)
     bounce_time = (29-capture_time) if capture_time<29 else 0.5
     print('Capture time: '+str(capture_time)+'. Green for '+str(bounce_time)+' seconds.')
     time.sleep(bounce_time)
     led_off([0,0,1,0]) #green led off
+    if settings.leds_enabled:
+        blue_spin()
 
 #inits
 setup_weight()

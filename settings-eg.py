@@ -20,6 +20,7 @@ red=21
 amber=22
 green=23
 
+leds_enabled=True
 leds_pin=18
 leds_count=24
 
