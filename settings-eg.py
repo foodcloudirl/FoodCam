@@ -21,6 +21,7 @@ amber=22
 green=23
 
 leds_pin=18
+leds_count=24
 
 bakery=1
 grocery=2

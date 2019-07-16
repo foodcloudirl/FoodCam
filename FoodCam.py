@@ -81,6 +81,18 @@ def led_off(leds):#array [red,amber,green,blue]
     if leds[3]:
         GPIO.output(settings.blue, settings.off)
     
+# Define functions which animate LEDs in various ways.
+def blue_spin(i = 0):
+    global leds
+    """Wipe color across display a pixel at a time."""
+    new_i = (i+1)%leds.numPixels()
+    threading.Timer(0.05, blue_spin, new_i).start()
+    leds.setPixelColor((i-2)%leds.numPixels(), Color(64, 64, 64)) # dim white
+    leds.setPixelColor((i-1)%leds.numPixels(), Color(64, 78, 128)) # blueish white
+    leds.setPixelColor(i, Color(64, 90, 255)) # blue
+    leds.setPixelColor((i+1)%leds.numPixels(), Color(64, 78, 255)) # blueish white
+    leds.show()
+
 
 def ping():
     global network_warning
@@ -104,13 +116,12 @@ def ping():
     
 
 def blink():
-    global network_warning
+    global network_warning, leds
     led_off([0,0,0,1]) #blue led off
     if network_warning:
         error_flash()
     time.sleep(10)
     led_on([0,0,0,1]) #blue led on
-    colorWipe(strip, Color(0, 255, 0))  # Blue wipe
     threading.Timer(0.01, blink).start()
 
 def error_flash():
@@ -294,6 +305,8 @@ def capture(channel):
 
 #inits
 setup_weight()
+blue_spin()  # Blue wipe
+
 # bounce must be greater than time to upload image and send to slack/email, eg 30 seconds
 GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=capture, bouncetime=30000)
 
