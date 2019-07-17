@@ -215,6 +215,8 @@ def send_server(url, weight):
     data = {'recipient':settings.recipient,
             'weight':weight,
             'location':settings.location,
+            'slackUrl':settings.slackUrl,
+            'email_to':settings.email_to,
             'image_url':str(url)
     }
     print(data)
