@@ -1,15 +1,19 @@
 import RPi.GPIO as GPIO
 slackUrl='https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXX'
 slackTestUrl='https://hooks.slack.com/services/XXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXX'
-mailgunUrl='https://api.mailgun.net/v3/sandboxa5b983d793f545d484633162c581bf61.mailgun.org/messages'
-mailgunTestUrl='https://api.mailgun.net/v3/sandboxa5b983d793f545d484633162c581bf61.mailgun.org/messages'
-mailgunUser='api:979b65fbe1b9f4da9a749f8582aa1d58-afab6073-660077d5'
-mailgunSender='foodcam@sandboxa5b983d793f545d484633162c581bf61.mailgun.org'
+mailgunUrl='https://api.mailgun.net/v3/0000000000000000000.mailgun.org/messages'
+mailgunTestUrl='https://api.mailgun.net/v3/0000000000000000000.mailgun.org/messages'
+mailgunUser='api:0000000000000000000-0000000000000000000-0000000000000000000'
+mailgunSender='foodcam@0000000000000000000.mailgun.org'
 copiaUrl='https://copia.food.cloud'
 copiaTestUrl='https://copia-c.food.cloud'
+foodcamServerUrl='copia-support.herokuapp.com/api/foodcam'
+foodcamServerKey='0000000000000000'
 
 location='the kitchen'
 recipient='FoodCloud'
+email_to=['james@madebycliff.com']
+
 on=GPIO.HIGH
 off=GPIO.LOW
 

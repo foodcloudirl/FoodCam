@@ -32,6 +32,12 @@ buffer2 = StringIO()
 image_control = pycurl.Curl()
 image_control.setopt(image_control.URL,'localhost:8080/0/action/snapshot')
 
+server = pycurl.Curl()
+server.setopt(server.URL,settings.foodcamServerUrl+"?api_token="+settings.foodcamServerKey)
+server.setopt(server.HTTPHEADER,['Accept: application/json'])
+server.setopt(server.TIMEOUT, 55)
+server.setopt(server.POST,1)
+
 slack = pycurl.Curl()
 slack.setopt(slack.URL,settings.slackUrl)
 slack.setopt(slack.HTTPHEADER,['Accept: application/json'])
@@ -60,6 +66,7 @@ network_warning = False
 # Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
 leds = Adafruit_NeoPixel(settings.leds_count, settings.leds_pin, 800000, 10, False, 255, 0)
 leds.begin()
+blue_spin_on = True
 
 def led_on(leds):#array [red,amber,green,blue]
     if leds[0]:
@@ -82,8 +89,11 @@ def led_off(leds):#array [red,amber,green,blue]
         GPIO.output(settings.blue, settings.off)
     
 def blue_spin(i = 0):
-    global leds
-    threading.Timer(0.05, blue_spin, [(i+1)%leds.numPixels()]).start() # keep spinning every 50ms
+    global leds, blue_spin_on
+    if blue_spin_on:
+        threading.Timer(0.05, blue_spin, [(i+1)%leds.numPixels()]).start() # keep spinning every 50ms
+    else:
+        blue_spin_on = True # prevent timer loop, but set to true for next time blue_spin is called
     leds.setPixelColor((i-2)%leds.numPixels(), Color(64, 64, 64)) # dim white
     leds.setPixelColor((i-1)%leds.numPixels(), Color(64, 78, 128)) # blueish white
     leds.setPixelColor(i, Color(64, 90, 255)) # blue
@@ -91,28 +101,32 @@ def blue_spin(i = 0):
     leds.show()
 
 def white():
-    global leds
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, Color(255,255,255))
-    strip.show()
+    global leds, blue_spin_on
+    blue_spin_on = False # stop timer
+    for i in range(leds.numPixels()):
+        leds.setPixelColor(i, Color(255,255,255))
+    leds.show()
 
 def green():
-    global leds
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, Color(0,255,0))
-    strip.show()
+    global leds, blue_spin_on
+    blue_spin_on = False # stop timer
+    for i in range(leds.numPixels()):
+        leds.setPixelColor(i, Color(0,255,0))
+    leds.show()
 
 def amber():
-    global leds
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, Color(255,255,0))
-    strip.show()
+    global leds, blue_spin_on
+    blue_spin_on = False # stop timer
+    for i in range(leds.numPixels()):
+        leds.setPixelColor(i, Color(255,200,0))
+    leds.show()
 
 def red():
-    global leds
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, Color(255,0,0))
-    strip.show()
+    global leds, blue_spin_on
+    blue_spin_on = False # stop timer
+    for i in range(leds.numPixels()):
+        leds.setPixelColor(i, Color(255,0,0))
+    leds.show()
 
 
 def ping():
@@ -196,6 +210,25 @@ def upload_dropbox(filename):
         print('dropbox_uploader empty: '+bashIO)
     
 
+def send_server(url, weight):
+    global network_warning
+    data = {'recipient':settings.recipient,
+            'weight':weight,
+            'location':settings.location,
+            'image_url':str(url)
+    }
+    print(data)
+    js = json.dumps(data)
+    server.setopt(server.POSTFIELDS,js)
+    try:
+        server.perform()
+        network_warning = False
+        print('Sent to server: '+str(server.getinfo(pycurl.RESPONSE_CODE)))
+    except pycurl.error as e:
+        network_warning = True
+        error_flash()
+        print('Error server: '+str(e))
+
 def send_slack(url, weight):
     global network_warning
     data = {'attachments':[{
@@ -238,7 +271,6 @@ def send_email(url, weight):
         content = buffer2.getvalue()
         print('Sent to email, content: '+content)
     except pycurl.error as e:
-        network_warning = True
         error_flash()
         print('Error email: '+str(e))
 
@@ -317,8 +349,9 @@ def capture(channel):
         print('No image url, ending capture')
         led_off([0,1,0,0]) #amber led off
         return
-    send_slack(url,weight_str)
-    send_email(url,weight_str)
+    send_server(url, weight)
+    # send_slack(url,weight_str)
+    # send_email(url,weight_str)
     led_off([0,1,0,0]) #amber led off
     led_on([0,0,1,0]) #green led on
     if settings.leds_enabled:
@@ -337,7 +370,7 @@ setup_weight()
 blue_spin()  # Blue wipe
 
 # bounce must be greater than time to upload image and send to slack/email, eg 30 seconds
-GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=capture, bouncetime=30000)
+GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=capture, bouncetime=60000)
 
 #def exit():
 #    GPIO.cleanup() #Clean up GPIO on CTRL+C exit
