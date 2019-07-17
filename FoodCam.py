@@ -92,8 +92,6 @@ def blue_spin(i = 0):
     global leds, blue_spin_on
     if blue_spin_on:
         threading.Timer(0.05, blue_spin, [(i+1)%leds.numPixels()]).start() # keep spinning every 50ms
-    else:
-        blue_spin_on = True # prevent timer loop, but set to true for next time blue_spin is called
     leds.setPixelColor((i-2)%leds.numPixels(), Color(64, 64, 64)) # dim white
     leds.setPixelColor((i-1)%leds.numPixels(), Color(64, 78, 128)) # blueish white
     leds.setPixelColor(i, Color(64, 90, 255)) # blue
@@ -221,6 +219,7 @@ def send_server(url, weight):
     }
     print(data)
     js = json.dumps(data)
+    server.setopt(server.HTTPHEADER, [ 'Content-Type: application/json' , 'Accept: application/json'])
     server.setopt(server.POSTFIELDS,js)
     try:
         server.perform()
