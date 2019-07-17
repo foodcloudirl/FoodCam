@@ -213,7 +213,7 @@ def upload_dropbox(filename):
 def send_server(url, weight):
     global network_warning
     data = {'recipient':settings.recipient,
-            'weight':weight,
+            'weight':str(weight),
             'location':settings.location,
             'slackUrl':settings.slackUrl,
             'email_to':settings.email_to,
@@ -230,51 +230,6 @@ def send_server(url, weight):
         network_warning = True
         error_flash()
         print('Error server: '+str(e))
-
-def send_slack(url, weight):
-    global network_warning
-    data = {'attachments':[{
-        'fallback':'A picture of tasty surplus food!',
-        'text':'Hello '+settings.recipient+', there is '+weight+'Kg of surplus food available in '+settings.location+'!',
-        'image_url':str(url)
-    }]}
-    print(data)
-    js = json.dumps(data)
-    slack.setopt(slack.POSTFIELDS,js)
-    try:
-        slack.perform()
-        network_warning = False
-        print('Sent to slack: '+str(slack.getinfo(pycurl.RESPONSE_CODE)))
-    except pycurl.error as e:
-        network_warning = True
-        error_flash()
-        print('Error slack: '+str(e))
-
-def send_email(url, weight):
-    global network_warning, buffer2
-    data = [
-        ('from',settings.mailgunSender),
-        ('to','james@madebycliff.com'),
-        ('subject','Surplus food available at '+settings.location+'!'),
-        ('html','Hello '+settings.recipient+', there is '+weight+'Kg of surplus food available in '+settings.location+'!<br>'+
-            '<img src="'+str(url)+'" />'),
-        ('v:location',settings.location),
-        ('v:recipient',settings.recipient),
-        ('v:image_url',str(url))
-    ]
-    print(data)
-    js = json.dumps(data)
-    try:
-        mailgun.setopt(slack.HTTPPOST,data)
-        mailgun.perform()
-        network_warning = False
-        print('Sent to email: '+str(mailgun.getinfo(pycurl.RESPONSE_CODE)))
-        mailgun.close()
-        content = buffer2.getvalue()
-        print('Sent to email, content: '+content)
-    except pycurl.error as e:
-        error_flash()
-        print('Error email: '+str(e))
 
 #weight sensor
 def setup_weight():
@@ -313,7 +268,7 @@ def read_weight():
 
 #button press
 def capture(channel):
-    global network_warning
+    global network_warning, blue_spin_on
     now = time.time()
     led_on([1,0,0,0]) #red led on
     if settings.leds_enabled:
@@ -352,8 +307,6 @@ def capture(channel):
         led_off([0,1,0,0]) #amber led off
         return
     send_server(url, weight)
-    # send_slack(url,weight_str)
-    # send_email(url,weight_str)
     led_off([0,1,0,0]) #amber led off
     led_on([0,0,1,0]) #green led on
     if settings.leds_enabled:
@@ -365,6 +318,7 @@ def capture(channel):
     time.sleep(bounce_time)
     led_off([0,0,1,0]) #green led off
     if settings.leds_enabled:
+        blue_spin_on = True
         blue_spin()
 
 #inits

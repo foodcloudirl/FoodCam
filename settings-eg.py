@@ -1,13 +1,11 @@
 import RPi.GPIO as GPIO
 slackUrl='https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXX'
 slackTestUrl='https://hooks.slack.com/services/XXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXX'
-mailgunUrl='https://api.mailgun.net/v3/0000000000000000000.mailgun.org/messages'
-mailgunTestUrl='https://api.mailgun.net/v3/0000000000000000000.mailgun.org/messages'
-mailgunUser='api:0000000000000000000-0000000000000000000-0000000000000000000'
-mailgunSender='foodcam@0000000000000000000.mailgun.org'
+
 copiaUrl='https://copia.food.cloud'
 copiaTestUrl='https://copia-c.food.cloud'
-foodcamServerUrl='copia-support.herokuapp.com/api/foodcam'
+
+foodcamServerUrl='https://copia-support.herokuapp.com/api/foodcam'
 foodcamServerKey='0000000000000000'
 
 location='the kitchen'
