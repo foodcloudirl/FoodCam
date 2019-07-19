@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+from datetime import datetime
 import os
 import pycurl
 from StringIO import StringIO
@@ -9,9 +10,10 @@ import threading
 import settings
 import socket
 import argparse
+from picamera import PiCamera
 import sys
-sys.path.insert(0, 'hx711py')
-sys.path.insert(0, 'rpi_ws281x/python')
+sys.path.insert(0, '/home/pi/FoodCam/hx711py')
+sys.path.insert(0, '/home/pi/FoodCam/rpi_ws281x/python')
 from hx711 import HX711
 from neopixel import *
 
@@ -26,6 +28,9 @@ GPIO.output(settings.blue, settings.off) #blue led off
 GPIO.output(settings.red, settings.off) #red led off
 GPIO.output(settings.amber, settings.off) #amber led off
 GPIO.output(settings.green, settings.off) #green led off
+
+camera = PiCamera()
+camera.start_preview()
 
 buffer = StringIO()
 buffer2 = StringIO()
@@ -153,9 +158,9 @@ def blink():
     led_off([0,0,0,1]) #blue led off
     if network_warning:
         error_flash()
-    time.sleep(10)
+    time.sleep(2)
     led_on([0,0,0,1]) #blue led on
-    threading.Timer(0.01, blink).start()
+    threading.Timer(0.1, blink).start()
 
 def error_flash():
     print('Error flash!!!')
@@ -194,6 +199,8 @@ def get_ip_address():
 def upload_dropbox(filename):
     global network_warning
     try:
+        os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/'+filename+' /')
+        time.sleep(1)
         bashIO = os.popen('bash /home/pi/FoodCam/dropbox_uploader.sh share /'+filename).read()
         network_warning = False
         print('dropbox_uploader: '+bashIO)
@@ -280,25 +287,17 @@ def capture(channel):
         print('Weight captured: '+weight_str)
     except: 
         print('Error capturing weight')
-    try:
-        image_control.perform()
-        network_warning = False
-        print('Capturing image: '+str(image_control.getinfo(pycurl.RESPONSE_CODE)))
-    except pycurl.error as e:
-        network_warning = True
-        error_flash()
-        print('Error capture: '+str(e))
-        led_off([1,0,0,0]) #red led off
-        return
+    now1 = datetime.now() 
+    date_time = now1.strftime("%Y-%m-%d_%H:%M:%S")
+    filename = 'foodcam_image_'+date_time+'.jpg'
+    print(filename)
+    camera.capture('/home/pi/'+filename)
+    print('A photo has been taken')
     time.sleep(0.6)
     led_off([1,0,0,0]) #red led off
     led_on([0,1,0,0]) #amber led on
     if settings.leds_enabled:
         amber()
-    os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
-    time.sleep(1)
-    filename = os.readlink('/home/pi/motion/lastsnap.jpg')
-    print(filename)
     url = upload_dropbox(filename)
     if not url:
         error_flash()
@@ -315,6 +314,7 @@ def capture(channel):
     bounce_time = (29-capture_time) if capture_time<29 else 0.5
     print('Capture time: '+str(capture_time)+'. Green for '+str(bounce_time)+' seconds.')
     time.sleep(bounce_time)
+    os.remove('/home/pi/'+filename) 
     led_off([0,0,1,0]) #green led off
     if settings.leds_enabled:
         blue_spin_on = True
@@ -329,4 +329,5 @@ GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=capture, bouncetim
 
 #def exit():
 #    GPIO.cleanup() #Clean up GPIO on CTRL+C exit
+
 
