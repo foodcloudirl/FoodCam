@@ -13,8 +13,8 @@ echo "FoodCam Setup: Code connectivity software installed..."
 # button and settings
 cp button-eg.sh ../button.sh
 # rc.local update
-sed -i "s|fi|fi\n\nprintf \"**************************\"\nprintf \"STARTING FOODCLOUD FOODCAM\"\nprintf \"**************************\"\nsudo motion \&\nsudo sh /home/pi/button.sh \&\n;|g" /etc/rc.local
-cp settings-eg.sh settings.sh
+sudo sed -i "s|fi|fi\n\nprintf \"**************************\"\nprintf \"STARTING FOODCLOUD FOODCAM\"\nprintf \"**************************\"\nsudo motion \&\nsudo sh /home/pi/button.sh \&\n;|g" /etc/rc.local
+cp settings-eg.py settings.py
 echo "FoodCam startup files copied..."
 
 # load sensor
