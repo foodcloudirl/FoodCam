@@ -98,10 +98,12 @@ def blue_spin(i = 0):
     global leds, blue_spin_on
     if blue_spin_on:
         threading.Timer(0.05, blue_spin, [(i+1)%leds.numPixels()]).start() # keep spinning every 50ms
-    leds.setPixelColor((i-2)%leds.numPixels(), Color(25, 25, 25)) # dim white
-    leds.setPixelColor((i-1)%leds.numPixels(), Color(25, 25, 90)) # blueish white
-    leds.setPixelColor(i, Color(0, 0, 255)) # blue
-    leds.setPixelColor((i+1)%leds.numPixels(), Color(25, 25, 90)) # blueish white
+    leds.setPixelColor((i-3)%leds.numPixels(), Color(5, 5, 5)) # dim white
+    leds.setPixelColor((i-2)%leds.numPixels(), Color(5, 20, 50)) # dim white
+    leds.setPixelColor((i-1)%leds.numPixels(), Color(5, 40, 90)) # blueish white
+    leds.setPixelColor(i, Color(0, 60, 255)) # blue
+    leds.setPixelColor((i+1)%leds.numPixels(), Color(5, 40, 90)) # blueish white
+    leds.setPixelColor((i+2)%leds.numPixels(), Color(5, 20, 50)) # blueish white
     leds.show()
 
 def white():
