@@ -289,6 +289,19 @@ def capture(channel):
         print('Weight captured: '+weight_str)
     except: 
         print('Error capturing weight')
+    # try: #motion
+    #     image_control.perform()
+    #     network_warning = False
+    #     print('Capturing image: '+str(image_control.getinfo(pycurl.RESPONSE_CODE)))
+        # os.system('bash /home/pi/FoodCam/dropbox_uploader.sh upload /home/pi/motion/lastsnap.jpg /')
+        # time.sleep(1)
+        # filename = os.readlink('/home/pi/motion/lastsnap.jpg')
+    # except pycurl.error as e:
+    #     network_warning = True
+    #     error_flash()
+    #     print('Error capture: '+str(e))
+    #     led_off([1,0,0,0]) #red led off
+    #     return
     now1 = datetime.now() 
     date_time = now1.strftime("%Y-%m-%d_%H:%M:%S")
     filename = 'foodcam_image_'+date_time+'.jpg'
