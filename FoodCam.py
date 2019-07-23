@@ -72,6 +72,7 @@ network_warning = False
 leds = Adafruit_NeoPixel(settings.leds_count, settings.leds_pin, 800000, 10, False, 255, 0)
 leds.begin()
 blue_spin_on = True
+button_debounce = 45 #seconds
 
 def led_on(leds):#array [red,amber,green,blue]
     if leds[0]:
@@ -97,10 +98,10 @@ def blue_spin(i = 0):
     global leds, blue_spin_on
     if blue_spin_on:
         threading.Timer(0.05, blue_spin, [(i+1)%leds.numPixels()]).start() # keep spinning every 50ms
-    leds.setPixelColor((i-2)%leds.numPixels(), Color(64, 64, 64)) # dim white
-    leds.setPixelColor((i-1)%leds.numPixels(), Color(64, 78, 128)) # blueish white
-    leds.setPixelColor(i, Color(64, 90, 255)) # blue
-    leds.setPixelColor((i+1)%leds.numPixels(), Color(64, 78, 255)) # blueish white
+    leds.setPixelColor((i-2)%leds.numPixels(), Color(25, 25, 25)) # dim white
+    leds.setPixelColor((i-1)%leds.numPixels(), Color(25, 25, 90)) # blueish white
+    leds.setPixelColor(i, Color(0, 0, 255)) # blue
+    leds.setPixelColor((i+1)%leds.numPixels(), Color(25, 25, 90)) # blueish white
     leds.show()
 
 def white():
@@ -274,7 +275,7 @@ def read_weight():
 
 #button press
 def capture(channel):
-    global network_warning, blue_spin_on
+    global network_warning, blue_spin_on, button_debounce
     now = time.time()
     led_on([1,0,0,0]) #red led on
     if settings.leds_enabled:
@@ -282,7 +283,8 @@ def capture(channel):
     print('Button Pressed, channel '+str(channel))
     time.sleep(1.1)
     try:
-        weight = read_weight()
+        weight1 = read_weight()
+	weight = weight1 if weight1 > 0 else 0
         weight_str = str(round(weight, 2))
         print('Weight captured: '+weight_str)
     except: 
@@ -311,7 +313,7 @@ def capture(channel):
         green()
     later = time.time()
     capture_time = int(later - now)
-    bounce_time = (29-capture_time) if capture_time<29 else 0.5
+    bounce_time = ((button_debounce-1)-capture_time) if capture_time<(button_debounce-1) else 0.5
     print('Capture time: '+str(capture_time)+'. Green for '+str(bounce_time)+' seconds.')
     time.sleep(bounce_time)
     os.remove('/home/pi/'+filename) 
@@ -325,7 +327,7 @@ setup_weight()
 blue_spin()  # Blue wipe
 
 # bounce must be greater than time to upload image and send to slack/email, eg 30 seconds
-GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=capture, bouncetime=60000)
+GPIO.add_event_detect(settings.button, GPIO.FALLING, callback=capture, bouncetime= (button_debounce*1000) )
 
 #def exit():
 #    GPIO.cleanup() #Clean up GPIO on CTRL+C exit
