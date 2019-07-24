@@ -8,11 +8,9 @@ press the button!
 Everyone in the office will automatically get a picture of the food sent to them (via slack, if you don’t have it, get it…slack.com) to say there’s food available!
 
 
-#####################################
-## Set up FoodCam
-#####################################
 
-#####################################
+## Set up FoodCam
+
 ## Headless Setup of Pi
 Download latest version of Raspian Jessie Lite from https://www.raspberrypi.org/downloads/raspbian/
 Install Raspbian Jessie Lite on SD Card with Etcher
@@ -29,23 +27,19 @@ network={
     key_mgmt=WPA-PSK
 }
 ```
-#####################################
+
 # 1st boot
-#####################################
 Locate On Network, default hostname is raspberrypi
 ``` sudo passwd```
  Follow Instructions to change password
 
-#####################################
+
 # Change raspi-config 
-#####################################
 Set up picamera
 ```sudo raspi-config```
 Follow dialog to enable camera and change hostname to foodcam, enable raspicam and ssh
 
-#####################################
 # Clone the github folder to the raspi
-#####################################
 ```
 cd ~
 git clone THE_URL_OF_THIS_REPO
@@ -53,14 +47,10 @@ cd FoodCam
 ```
 
 
-#####################################
 # Run the setup shell script
-#####################################
 ```sudo sh setup.sh```
 
-#####################################
 # Update the settings for your surplusfoodcam
-#####################################
 
 Due to the various ways possible to build these surplus food cameras, we have created an ignored file for you to manage your sensitive credentials and specific settings. DO NOT COMMIT SETTINGS TO UNIGNORED FILES!
 ```
@@ -78,11 +68,12 @@ Submit issues on github or pull requests directly to the repo.
 Please ensure all code is of high quality and robust so that errors etc can be managed gracefully.
 
 
+
+
+
 # Older setup, for usb cameras for example:
 
-#####################################
 # Update Image, Install motion
-#####################################
 ```
 sudo apt-get update
 sudo apt-get upgrade
@@ -90,10 +81,7 @@ sudo apt-get upgrade
 Make some coffee - takes a bit of time!
 ```sudo apt-get install motion```
 
-
-#####################################
 # Set motion to run at boot
-#####################################
 
 ```sudo nano /etc/rc.local```
 # place code before exit=0:
@@ -109,9 +97,7 @@ and update motion
 sudo nano /etc/default/motion
 #set to no
 ```
-#####################################
 # Update motion.conf
-#####################################
 ```
 sudo nano /etc/motion/motion.conf
 daemon on
