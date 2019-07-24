@@ -60,6 +60,7 @@ sudo nano settings.py
 Change the settings according to the GPIO pins you're using for the buttons, leds and peripherals
 Specify the integration details used to talk to your communication systems
 
+![alt text](https://www.dropbox.com/s/6g68ddew4pxcves/foodcam_image_2019-07-19_01%3A41%3A59.jpg?raw=1 "FoodCam LEDs and Button wiring")
 
 
 # Contributions
